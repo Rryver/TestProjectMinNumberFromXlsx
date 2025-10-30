@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: TestProjectMInNumberFromXlsx
+
+
+springdoc:
+  swagger-ui:
+    path: /doc
