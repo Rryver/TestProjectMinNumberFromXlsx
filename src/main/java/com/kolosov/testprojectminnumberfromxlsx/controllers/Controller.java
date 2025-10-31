@@ -3,8 +3,11 @@ package com.kolosov.testprojectminnumberfromxlsx.controllers;
 import com.kolosov.testprojectminnumberfromxlsx.exceptions.BadArgumentException;
 import com.kolosov.testprojectminnumberfromxlsx.exceptions.NotFoundException;
 import com.kolosov.testprojectminnumberfromxlsx.services.ExcelService;
-import com.kolosov.testprojectminnumberfromxlsx.utils.FastSortService;
-import com.kolosov.testprojectminnumberfromxlsx.utils.SortService;
+import com.kolosov.testprojectminnumberfromxlsx.services.sort.SortService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
@@ -25,7 +28,11 @@ public class Controller {
     private final SortService sortService;
 
     @GetMapping
-    public ResponseEntity<String> index(@RequestParam("path") String pathToFile, @RequestParam("N") Integer pos) {
+    @Parameters({
+            @Parameter(name = "N", schema = @Schema(type = "integer", minimum = "1"))
+    })
+    public ResponseEntity<String> index(@RequestParam("path") String pathToFile,
+                                        @RequestParam("N") @Min(1) Integer pos) {
         FileSystemResource fileSystemResource = new FileSystemResource(pathToFile);
         File file = fileSystemResource.getFile();
         if (!file.exists()) {
@@ -39,6 +46,6 @@ public class Controller {
 
         nums = sortService.sort(nums);
 
-        return new ResponseEntity<>(nums.get(pos).toString(), HttpStatus.OK);
+        return new ResponseEntity<>(nums.get(pos - 1).toString(), HttpStatus.OK);
     }
 }
